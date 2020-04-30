@@ -1,18 +1,16 @@
-import React from "react";
-import { Item, Button, Label, Segment  } from "semantic-ui-react";
-import { IActivity } from "../../../app/models/activity";
+import React, { useContext } from "react";
+import { Item, Button, Label, Segment } from "semantic-ui-react";
+import { observer } from "mobx-react-lite";
+import ActivityStore from "../../../app/stores/acitivityStore";
 
-interface IProps {
-  activities: IActivity[];
-  selectActivity: (id: string) => void;
-  deleteActivity: (id: string) => void;
-}
 
-export const ActivityList: React.FC<IProps> = (props) => {
+const ActivityList: React.FC = () => {
+  const activityStore = useContext(ActivityStore);
+  const {activitiesByDate, selectActivity, deleteActivity,submitting,target} = activityStore;
   return (
     <Segment clearing>
       <Item.Group divided>
-        {props.activities.map((activitie) => (
+        {activitiesByDate.map((activitie) => (
           <Item key={activitie.id}>
             <Item.Content>
               <Item.Header as="a">{activitie.title}</Item.Header>
@@ -23,13 +21,16 @@ export const ActivityList: React.FC<IProps> = (props) => {
               </Item.Description>
               <Item.Extra>
                 <Button
-                  onClick={() => props.selectActivity(activitie.id)}
+                  name={activitie.id}
+                  onClick={(e) => selectActivity(activitie.id)}
                   floated="right"
                   content="View"
                   color="blue"
                 ></Button>
                 <Button
-                  onClick={() => props.deleteActivity(activitie.id)}
+                  name={activitie.id}
+                  loading={target === activitie.id && submitting}
+                  onClick={(e) => deleteActivity(e, activitie.id)}
                   floated="right"
                   content="Delete"
                   color="red"
@@ -44,3 +45,4 @@ export const ActivityList: React.FC<IProps> = (props) => {
     </Segment>
   );
 };
+export default observer(ActivityList);
