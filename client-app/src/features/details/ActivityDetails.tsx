@@ -12,15 +12,19 @@ import ActivityDetailedSidebar from "./ActivityDetailedSidebar";
 interface DetailParams{
   id: string;
 }
- const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({match}) => {
+ const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({match,history}) => {
   const activityStore = useContext(ActivityStore);
   const {activity,loadActivity,loadingInitial} = activityStore;
 
   useEffect(() =>{
-    loadActivity(match.params.id)
+    loadActivity(match.params.id);
   },[loadActivity, match.params.id])
 
-  if(loadingInitial || !activity) return <LoadingComponent content='Loading activity...' />
+  if(loadingInitial || !activity) {
+    return <LoadingComponent content='Loading activity...' />
+  }
+
+ 
   return (
     <Grid>
       <Grid.Column width={10}>

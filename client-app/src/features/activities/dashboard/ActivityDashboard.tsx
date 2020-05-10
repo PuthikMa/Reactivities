@@ -7,7 +7,6 @@ import ActivityStore from "../../../app/stores/acitivityStore";
 
 const ActivityDashboard: React.FC = () => {
   const activityStore = useContext(ActivityStore);
-
   useEffect(() => {
     activityStore.loadActivities();
   }, [activityStore]);
