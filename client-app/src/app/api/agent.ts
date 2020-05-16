@@ -1,9 +1,19 @@
+import { IUserFromValues } from './../models/user';
 import { IActivity } from './../models/activity';
 import axios, { AxiosResponse } from 'axios';
 import { history } from '../..';
 import { toast } from 'react-toastify';
+import { IUser } from '../models/user';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.interceptors.request.use((config) => {
+    const token = window.localStorage.getItem('jwt');
+    if(token) config.headers.Authorization= `Bearer ${token}`;
+    return config
+}, error => {
+    
+    return Promise.reject(error);
+})
 
 axios.interceptors.response.use(undefined, error => {
     if(error.message === 'Network Error' && !error.response){
@@ -22,7 +32,7 @@ axios.interceptors.response.use(undefined, error => {
         toast.error('Server error - check the terminal for more info!');
         history.push("/notFound");
     }
-    throw error;
+    throw error.response;
 })
 
 const responseBody = (response: AxiosResponse) => response.data;
@@ -43,6 +53,12 @@ const Activities = {
     delete: (id: string) => requests.del(`/activities/${id}`)
 }
 
+const User = {
+    current: () : Promise<IUser> => requests.get('/user'),
+    login: (user: IUserFromValues) : Promise<IUser> => requests.post(`/user/login`, user),
+    register: (user: IUserFromValues) : Promise<IUser> => requests.post(`/user/register`, user),
+}
 export default {
-    Activities
+    Activities,
+    User
 }
